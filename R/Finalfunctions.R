@@ -19,10 +19,9 @@ ephysfilter <- function(dataSet1, y_max=0.6, y_min=0.4, z_min=35, z_max=75, RD=0
   return(ephys1)
 }
 
-
 #' This function helps graph a ggviolin plot for data visualization.
 #'
-#' @param dataname the data file name
+#' @param dataname the data file name, passed to \code{\link{ggviolin}}
 #' @param xname the treatment column name
 #' @param yname the dependent variable
 #' @param title the title of the plot
@@ -30,13 +29,13 @@ ephysfilter <- function(dataSet1, y_max=0.6, y_min=0.4, z_min=35, z_max=75, RD=0
 #' @return
 #' @export
 #'
+#' @importFrom ggpubr ggviolin
 #' @examples
 #' Thresholdplot(ephys1, "Treatment", "Voltage.threshold.mV", "Voltage Threshold (mV)")
 Thresholdplot <- function (dataname, xname, yname, title)
 {
   ggviolin(dataname, x = xname, y = yname, aplha = 0.3, add = "boxplot", fill = xname, title = title)
 }
-
 
 
 #' This function helps create a statistical table of mean and STD.
