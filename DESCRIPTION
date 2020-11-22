@@ -1,0 +1,21 @@
+Package: FinalProjectYin
+Type: Package
+Title: Use R to Analysi Electrophysiology Data
+Version: 0.1.0
+Author: Yuexi Yin
+Maintainer: Yuexi Yin <yuexyin@iu.edu>
+Description: This package is specifically designed to analyze electrophysiology 
+    data from an experiment in my lab. Basically the experiment is about 
+    investigating how chornic alcohol drinking alters the animals' brain 
+    circuits. This package contains several functions that can help with
+    filtering out unstable cells; ploting graphs for visualization; creating
+    statistics table; and t-test. With those functions, we can save a lot of
+    times and analyze data quickly without repeated coding.
+License: GPL-4
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
