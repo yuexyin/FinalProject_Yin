@@ -42,10 +42,11 @@ ephys <- read.csv("Ephys_Yin.csv", header = TRUE)
 
 
 <font size="5">Function 1: ephysfilter</font>         
-<font size="3">This function helps with the first step of data analysis, which is filtering data. There are some criteria regarding the cell quality. The has to be:        
+<font size="3">This function helps with the first step of data analysis, which is filtering data. There are some criteria regarding the cell quality (This function requires dplyr package). The has to be:        
 1. The y frac value should fall between 0.4-0.6.      
 2. The z plane value should fall between 35-75.      
 3. Resistance difference should be less than 20%, which is less than 0.2 from the table.    
+<br />
 The following is an example: By simply putting the original file name into this  \func{ephysfilter()}, we can easily filter out those unstable cells that do not fit those criteria and put the filtered data into a new file called ephys1.
 </font>
 ```{r}
@@ -53,7 +54,8 @@ head(ephys1 <- ephysfilter(ephys))
 ```
 
 <font size="5">Function 2: Thresholdplot</font>        
-<font size="3">The second step is to plot a graph to visualize the data. I decided to use violin graph with a box plot in it because violin plot can not only show a marker for the median of the data, a box indicating the interquartile range, but also provide additional information about the probability density of the data at different values.Though we need to install the ggplot2 package in order to use this function, it still saves a lot of time by not having to type in all the labeling, captions, and requirements.    
+<font size="3">The second step is to plot a graph to visualize the data. I decided to use violin graph with a box plot in it because violin plot can not only show a marker for the median of the data, a box indicating the interquartile range, but also provide additional information about the probability density of the data at different values.Though we need to install the ggplot2 package in order to use this function, it still saves a lot of time by not having to type in all the labeling, captions, and requirements (This function requires ggpubr package).    
+<br />
 The following is an example: But puting the dataname, treatment group, dependent variable name, and the y-axis title into the \func{Thresholdplot()}, it will generate a violin plot: The a-axis is the treatment group (alcohol and water). The y-axis is the dependent variable, which is voltage threshold (mV) in this example. The title above is called "Voltage Threshold (mV)".</font>   
 ```{r}
 Thresholdplot(ephys1, "Treatment", "Voltage.threshold.mV", "Voltage Threshold (mV)")
@@ -66,6 +68,7 @@ Thresholdplot(ephys1, "Treatment", "Voltage.threshold.mV", "Voltage Threshold (m
 3. Calculate the mean and standard deviation for the selected dependent variable.    
 4. Repeat the above steps for the other treatment group.    
 5. Combine those two data frame into one.    
+<br />
 This \function{StatsTable} helps save a lot of steps and time to get to this statistical table. The following are two examples of how to use this function. By putting the data name, two treatment groups' name, and the name of the dependent variable, we can easily get the mean and STD for alcohol and water groups' voltage threshold and current threshold.</font>
 ```{r}
 StatsTable(ephys1, "alcohol", "water", "Cell.ID", "Voltage.threshold.mV")
@@ -73,7 +76,8 @@ StatsTable(ephys1, "alcohol", "water", "Cell.ID", "Current.Threshold..pA.")
 ```
 
 <font size="5">Function 4: Visualizing Data Normality</font>    
-<font size="3">Before performing the t-test for the above two treatment groups, we need to determine if the data of each group is normally distributed. To visualize the data normality, we can use Quantile-quantile plots (Q-Q plots), which draws the correlation between a given sample and the normal distribution.If most of the data points are fitted on the line, that means the data set is normally distributed.        
+<font size="3">Before performing the t-test for the above two treatment groups, we need to determine if the data of each group is normally distributed. To visualize the data normality, we can use Quantile-quantile plots (Q-Q plots), which draws the correlation between a given sample and the normal distribution.If most of the data points are fitted on the line, that means the data set is normally distributed (This function requires ggplot2 package).        
+<br />
 The following is an example of alcohol treated group's voltage threshold data distribution. By inputting the file name, treatment group name, the dependent variable name, and the title you wanted, a Q-Q plot will be generated with a linear regression line. We can see that all the data points are close to the line, indicating that all data can be explained by this model. The data set is likely normally distributed based on the graph.</font>
 ```{r}
 normaldisplot(ephys1, "alcohol", "Voltage.threshold.mV", "Voltage Threshold (mV)")
@@ -82,8 +86,11 @@ normaldisplot(ephys1, "alcohol", "Voltage.threshold.mV", "Voltage Threshold (mV)
 
 <font size="5">Function 5: Check Data Normalization</font>    
 <font size="3">Besides visualizing the distribution of the data, we have to calculate the statistical results to prove if the data set is actually normally distributed. This \function{normalization()} helps with two types of preliminary tests to check unpaired two-sample t-test assumptions.    
+<br />
 The first one is to use Shapiro-Wilk normality test to look at the normality. If the p-value is larger than 0.05, it means the distribution of the data are not significantly different from normal distribution. So we can assume the normality.    
-The second one is to use F-test to test for homogeneity in variance by using var.test(). If the p-value is greater than 0.05, it means there's no significant difference between the variance of the two sets of data. So we can use the classic t-test for the analysis.    
+<br />
+The second one is to use F-test to test for homogeneity in variance by using var.test(). If the p-value is greater than 0.05, it means there's no significant difference between the variance of the two sets of data. So we can use the classic t-test for the analysis (This function requires dplyr package).        
+<br />
 Below is an example of the preliminary tests of the voltage threshold data in alcohol treated group. After providing the data name, dependent variable, and the treatment group in the function, we can quickly get the results of the two tests: (1) Shapiro-Wilk normality test p-value=0.1962, which is larger than 0.05. This means the alcohol group data has the normality. (2) F-test p-value=0.6951, which is also larger than 0.05. It indicates that alcohol group data has homogeneity in variance. We can move on to use the classic t-test for analysis.</font>  
 ```{r}
 normalization(ephys1, "Voltage.threshold.mV", "alcohol")
@@ -91,6 +98,7 @@ normalization(ephys1, "Voltage.threshold.mV", "alcohol")
 
 <font size="5">Function 6: T-Test</font>    
 <font size="3">The final step is to perform a t-test to study if there is a significant difference between the two treatment groups. By simply typing in the dependent variable of interest and the file name, we can get the p value of the t-test and know the relationship between these two groups.    
+<br />
 The following are two examples of using this function. The results showed that the p-value for voltage threshold is 0.01275359, which is smaller than 0.05. This indicates that there is a significant difference of voltage threshold between alcohol and water groups. However, the p-value for current threshold is 1, which is larger than 0.05. It means there's no difference in current threshold between these two groups.</font>
 ```{r}
 threshttest("Voltage.threshold.mV", ephys1)
