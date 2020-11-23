@@ -12,15 +12,9 @@ vignette: >
 <br />
 <font size="6">Introduction (Background/Motivation)</font>  
 <br/>
-<font size="3">This package is specifically designed to analyze the electrophysiology data from an experiment in my lab. Basically, the experiment is about investigating how chronic alcohol drinking alters the animals' brain circuits. This circuit is known to play a role in habit formation and is involved in addiction. We need to compare the cells' voltage threshold and current threshold from alcohol drinking animals to water control animals. The lower the threshold, the easier to fire an action potential, the more excitatory connections between the circuits.       
+<font size="3">This package is specifically designed to analyze the electrophysiology data from an experiment in my lab. Basically, the experiment is about investigating how chronic alcohol drinking alters the animals' brain circuits, which plays an important role in addiction. We need to compare the cells' voltage threshold and current threshold from alcohol drinking animals to water control animals. The lower the threshold, the more excitatory connections between the circuits.       
 <br/>
-Without making this package, there are a lot of works need to be done to analyze the data. First, manually exclude the cells that are not stable based on several criteria. Second, use excel to reorganize the sheets and calculate mean, STD, n and some other basic properties for each variable. Third, import all the data to Prism, reorganize them, perform statistical analysis, make graphs, and make them pretty. We need to do all the above steps over and over again every time we get new data, which is a lot of repetitive work. Under this circumstances, I created this package to make things a lot easier. It contains several functions that are specifically designed to do all of the above steps required. This can quickly do data analysis and graph plotting, which would save a lot of time. The general processes include:   
-1. Filter out unstable/invalid cells.  
-2. Plot violin graphs for voltage threshold and current threshold data.    
-3. Check the data normality.    
-4. Perform t-test analysis on voltage threshold and current threshold (water group vs. alcohol group).     
-<br/>
-Overall, this project will highly improve the efficiency for data analysis on this experiment. The following will be the explanation of each function and some examples on how to use them. </font>  
+Without making this package, there are a lot of works need to be done to analyze the data. First, manually exclude the cells that are not stable based on several criteria. Second, use excel to reorganize the sheets and calculate mean, STD, n and some other basic properties for each variable. Third, import all the data to Prism, reorganize them, perform statistical analysis, make graphs, and make them pretty. We need to do all the above steps over and over again every time we get new data, which is a lot of repetitive work. Under this circumstances, I created this package to make things a lot easier. It contains several functions that are specifically designed to do all of the above steps required. This can quickly do data analysis and graph plotting, which would save a lot of time. The following will be the explanation of each function and some examples on how to use them. </font>  
 <br />
 <br />
 <br />
@@ -48,7 +42,7 @@ library(knitr)
 <font size="6">Package Content & Example Demonstrations</font>    
 <br/>
 <font size="5">Read the data set for example demonstration.</font>    
-<font size="3">I am going to use one of the electrophysiology data sets from my lab. The file has information including cell ID, their treatment groups (either alcohol or water), y frac value, z plane value, start and end resistance value, percent resistance difference, voltage threshold (mV), and current threshold (pA).</font>    
+<font size="3">I am going to use one of the electrophysiology data sets from my lab.</font>    
 ```{r}
 ephys <- read.csv("Ephys_Yin.csv", header = TRUE)
 ```
@@ -96,7 +90,7 @@ normaldisplot(ephys1, "alcohol", "Voltage.threshold.mV", "Voltage Threshold (mV)
 ```
 
 <br />
-<font size="5">Function 5: Check Data Normalization</font>    
+<font size="5">Function 5: normalization: Check Data Normalization</font>    
 <font size="3">Besides visualizing the distribution of the data, we have to calculate the statistical results to prove if the data set is actually normally distributed. This \function{normalization()} helps with two types of preliminary tests to check the unpaired two-sample t-test assumptions.    
 <br />
 The first one is to use Shapiro-Wilk normality test to look at the normality. If the p-value is larger than 0.05, it means the distribution of the data are not significantly different from normal distribution. So we can assume the normality.    
@@ -118,7 +112,7 @@ threshttest("Current.Threshold..pA.", ephys1)
 ```
 <br />
 <font size="5">Function 7: Shinygraph: Drag and Select Data Points</font>    
-<font size="3">The last function in this package is to use the shiny gadget to drag and select data points. Sometimes when we have all the data points on a graph and want to see the detailed information of certain data points, we have to look back and forth between the graph and the raw data file. With this \function{Shinygraph()}, we can simply drag a box that include the data points we want to see and then click "done". The detailed information of the selected data will be shown.    
+<font size="3">The last function in this package is to use the shiny gadget to drag and select data points. Sometimes when we have all the data points on a graph and want to see the detail information of certain data points, we have to look back and forth between the graph and the raw data file. With this \function{Shinygraph()}, we can simply drag a box that include the data points we want to see and then click "done". The detail information of the selected data will be shown.    
 The following is an example of selecting the water and alcohol treated voltage threshold data. By typing in the data file name, treatment, and the y-axis dependent variable, we can see a graph shown on the right side viewer. Let's say we want to see what are the two cells in alcohol group at the very bottom. We can drag a box around these two points, and then click "Done". The inforamtion is shown below. </font>
 ```{r}
 shinygraph(ephys1, "Treatment", "Voltage.threshold.mV")

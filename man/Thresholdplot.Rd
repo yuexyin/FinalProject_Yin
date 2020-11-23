@@ -7,7 +7,7 @@
 Thresholdplot(dataname, xname, yname, title)
 }
 \arguments{
-\item{dataname}{the data file name}
+\item{dataname}{the data file name, passed to \code{\link{ggviolin}}}
 
 \item{xname}{the treatment column name}
 
