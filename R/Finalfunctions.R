@@ -136,6 +136,7 @@ threshttest <- function (DependentVar, dataname)
 #' @export
 #'
 #' @examples
+#' shinygraph(ephys1, "Treatment", "Voltage.threshold.mV")
 shinygraph <- function(dframe, xvar, yvar, viewer=paneViewer())
   {
   ui <- miniPage(
