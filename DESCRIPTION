@@ -22,4 +22,6 @@ VignetteBuilder: knitr
 Imports: 
     ggpubr,
     dplyr,
-    ggplot2
+    ggplot2,
+    shiny,
+    miniUI

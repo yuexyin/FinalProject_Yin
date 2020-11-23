@@ -122,3 +122,35 @@ threshttest <- function (DependentVar, dataname)
   return(ttestthre$p.value)
 }
 
+
+
+
+#' This function helps use shiny to drag and select data on a graph
+#'
+#' @param dframe data file name
+#' @param xvar x variable name
+#' @param yvar y variable name
+#' @param viewer
+#'
+#' @return
+#' @export
+#'
+#' @examples
+shinygraph <- function(dframe, xvar, yvar, viewer=paneViewer())
+  {
+  ui <- miniPage(
+    gadgetTitleBar("Drag & Select Points"),
+    miniContentPanel(
+      plotOutput("plot", height = "100%", brush = "brush")
+    )
+  )
+  server <- function(input, output, session) {
+    output$plot <- renderPlot({
+      ggplot(dframe, aes_string(xvar, yvar)) + geom_point()
+    })
+    observeEvent(input$done, {
+      stopApp(brushedPoints(dframe, input$brush))
+    })
+  }
+  runGadget(ui, server)
+}

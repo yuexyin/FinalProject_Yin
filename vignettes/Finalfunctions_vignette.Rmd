@@ -6,16 +6,24 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<font size="6">Final Project: A R Package For Electrophysiology Data Analysis</font>
+<font size="7">Final Project: A R Package For Electrophysiology Data Analysis</font>
 <br/>
-<font size="6">Purpose of the Package</font>  
-<font size="3">This package is specifically designed to analyze electrophysiology data from an experiment in my lab. Basically, the experiment is about investigating how chronic alcohol drinking alters the animals' brain circuits (Motor Cortex --> Dorsolateral striatum). This circuit is known to play a role in habit formation and involved in addiction. We need to compare the cells' voltage threshold and current threshold for example, from alcohol drinking animals with water control animals. The lower the threshold, the easier to fire an action potential, the more excitatory connections between the circuits.   
-Without making this package, there are a lot of works need to be done to analyze the data. First, manually exclude the cells that are not stable based on several criteria. Second, use excel to reorganize the sheets and calculate mean, STD, n and some other basic properties for each variable. Third, import all the data to Prism, reorganize them, perform statistical analysis, make graphs, and make them pretty. We need to do all the above steps over and over again every time we get new data, which is a lot of repetitive work. In this case, this package is designed to make things a lot easier. It contains several functions that are specifically designed to do all of the above steps required. This can quickly do data analysis and graph plotting, which would save a lot of time. The general processes include:   
-1. Filter out unstable/invalid cells based on the value of their y frac, z plane, and resistance differences.  
-2. Plot boxplot/violin plot for voltage threshold and current threshold data.  
-3. Perform t-test analysis on voltage threshold and current threshold (saline group vs. alcohol group).     
+<br />
+<br />
+<font size="6">Introduction (Background/Motivation)</font>  
+<br/>
+<font size="3">This package is specifically designed to analyze the electrophysiology data from an experiment in my lab. Basically, the experiment is about investigating how chronic alcohol drinking alters the animals' brain circuits. This circuit is known to play a role in habit formation and is involved in addiction. We need to compare the cells' voltage threshold and current threshold from alcohol drinking animals to water control animals. The lower the threshold, the easier to fire an action potential, the more excitatory connections between the circuits.       
+<br/>
+Without making this package, there are a lot of works need to be done to analyze the data. First, manually exclude the cells that are not stable based on several criteria. Second, use excel to reorganize the sheets and calculate mean, STD, n and some other basic properties for each variable. Third, import all the data to Prism, reorganize them, perform statistical analysis, make graphs, and make them pretty. We need to do all the above steps over and over again every time we get new data, which is a lot of repetitive work. Under this circumstances, I created this package to make things a lot easier. It contains several functions that are specifically designed to do all of the above steps required. This can quickly do data analysis and graph plotting, which would save a lot of time. The general processes include:   
+1. Filter out unstable/invalid cells.  
+2. Plot violin graphs for voltage threshold and current threshold data.    
+3. Check the data normality.    
+4. Perform t-test analysis on voltage threshold and current threshold (water group vs. alcohol group).     
+<br/>
 Overall, this project will highly improve the efficiency for data analysis on this experiment. The following will be the explanation of each function and some examples on how to use them. </font>  
-
+<br />
+<br />
+<br />
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -27,22 +35,26 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 library(FinalProjectYin)
 library(dplyr)
-library(knitr)
-library(kableExtra)
-library(flextable)
 library(ggplot2)
 library(ggpubr)
+library(shiny)
+library(miniUI)
+
+library(kableExtra)
+library(flextable)
+library(knitr)
 ```
 
-<font size="5">Read the dataset for example demonstration.</font>    
-<font size="3">I used one of the electrophysiology datasets from my lab. The file has information including cell ID, their treatment groups (either alcohol or water), y frac value, z plane value, start and end resistance value, percent resistance difference, voltage threshold (mV), and current threshold (pA).</font>    
+<font size="6">Package Content & Example Demonstrations</font>    
+<br/>
+<font size="5">Read the data set for example demonstration.</font>    
+<font size="3">I am going to use one of the electrophysiology data sets from my lab. The file has information including cell ID, their treatment groups (either alcohol or water), y frac value, z plane value, start and end resistance value, percent resistance difference, voltage threshold (mV), and current threshold (pA).</font>    
 ```{r}
 ephys <- read.csv("Ephys_Yin.csv", header = TRUE)
 ```
 
-
-<font size="5">Function 1: ephysfilter</font>         
-<font size="3">This function helps with the first step of data analysis, which is filtering data. There are some criteria regarding the cell quality (This function requires dplyr package). The has to be:        
+<font size="5">Function 1: ephysfilter: Filter data</font>         
+<font size="3">This function helps with the first step of data analysis, which is filtering data (This function requires dplyr package). There are some criteria regarding the cell quality:        
 1. The y frac value should fall between 0.4-0.6.      
 2. The z plane value should fall between 35-75.      
 3. Resistance difference should be less than 20%, which is less than 0.2 from the table.    
@@ -52,16 +64,16 @@ The following is an example: By simply putting the original file name into this 
 ```{r}
 head(ephys1 <- ephysfilter(ephys))
 ```
-
-<font size="5">Function 2: Thresholdplot</font>        
-<font size="3">The second step is to plot a graph to visualize the data. I decided to use violin graph with a box plot in it because violin plot can not only show a marker for the median of the data, a box indicating the interquartile range, but also provide additional information about the probability density of the data at different values.Though we need to install the ggplot2 package in order to use this function, it still saves a lot of time by not having to type in all the labeling, captions, and requirements (This function requires ggpubr package).    
 <br />
-The following is an example: But puting the dataname, treatment group, dependent variable name, and the y-axis title into the \func{Thresholdplot()}, it will generate a violin plot: The a-axis is the treatment group (alcohol and water). The y-axis is the dependent variable, which is voltage threshold (mV) in this example. The title above is called "Voltage Threshold (mV)".</font>   
+<font size="5">Function 2: Thresholdplot: Create a violin graph</font>        
+<font size="3">The second step is to plot a graph to visualize the data. I decided to use violin graph with a box plot in it because violin plot can not only show a marker for the median of the data, a box indicating the interquartile range, but also provide additional information about the probability density of the data at different values. Though we need to install the ggpubr package and use ggviolin in order to use this function, it still saved a lot of time by not having to type in all the labeling, captions, and requirements.    
+<br />
+The following is an example: But putting the dataname, treatment group, dependent variable name, and the y-axis title into the \func{Thresholdplot()}, it will generate a violin plot: The x-axis is the treatment group (alcohol and water). The y-axis is the dependent variable, which is voltage threshold (mV) in this example. The title above is called "Voltage Threshold (mV)".</font>   
 ```{r}
 Thresholdplot(ephys1, "Treatment", "Voltage.threshold.mV", "Voltage Threshold (mV)")
 ```
-
-<font size="5">Function 3: Create a Statistical Table</font>    
+<br />
+<font size="5">Function 3: StatsTable: Create a Statistical Table</font>    
 <font size="3">After visualizing the data, we need to calculate the statistics to see if the two groups are actually significantly different from each other. This \function{StatsTable} helps with creating a statistical table which shows the mean and standard deviation of the two treatment groups. A couple of steps were included in this function:    
 1. Create a data frame with only one treatment group.    
 2. Select only the cell ID and the dependent variable columns in that data frame.    
@@ -69,34 +81,34 @@ Thresholdplot(ephys1, "Treatment", "Voltage.threshold.mV", "Voltage Threshold (m
 4. Repeat the above steps for the other treatment group.    
 5. Combine those two data frame into one.    
 <br />
-This \function{StatsTable} helps save a lot of steps and time to get to this statistical table. The following are two examples of how to use this function. By putting the data name, two treatment groups' name, and the name of the dependent variable, we can easily get the mean and STD for alcohol and water groups' voltage threshold and current threshold.</font>
+This \function{StatsTable} helps save a lot of time and steps to get to this statistical table. The following are two examples of how to use this function. By putting the data name, two treatment groups' name, cell ID column name, and the name of the dependent variable, we can easily get the mean and STD for alcohol and water groups' voltage threshold and current threshold.</font>
 ```{r}
 StatsTable(ephys1, "alcohol", "water", "Cell.ID", "Voltage.threshold.mV")
 StatsTable(ephys1, "alcohol", "water", "Cell.ID", "Current.Threshold..pA.")
 ```
-
-<font size="5">Function 4: Visualizing Data Normality</font>    
-<font size="3">Before performing the t-test for the above two treatment groups, we need to determine if the data of each group is normally distributed. To visualize the data normality, we can use Quantile-quantile plots (Q-Q plots), which draws the correlation between a given sample and the normal distribution.If most of the data points are fitted on the line, that means the data set is normally distributed (This function requires ggplot2 package).        
+<br />
+<font size="5">Function 4: normaldisplot: Visualizing Data Normality</font>    
+<font size="3">Before performing the t-test for the above two treatment groups, we need to determine if the data in each group is normally distributed. To visualize the data normality, we can use Quantile-quantile plots (Q-Q plots), which draws the correlation between a given sample and the normal distribution. If most of the data points are fitted on the line, that means the data set is normally distributed (This function requires ggplot2 package).        
 <br />
 The following is an example of alcohol treated group's voltage threshold data distribution. By inputting the file name, treatment group name, the dependent variable name, and the title you wanted, a Q-Q plot will be generated with a linear regression line. We can see that all the data points are close to the line, indicating that all data can be explained by this model. The data set is likely normally distributed based on the graph.</font>
 ```{r}
 normaldisplot(ephys1, "alcohol", "Voltage.threshold.mV", "Voltage Threshold (mV)")
 ```
 
-
+<br />
 <font size="5">Function 5: Check Data Normalization</font>    
-<font size="3">Besides visualizing the distribution of the data, we have to calculate the statistical results to prove if the data set is actually normally distributed. This \function{normalization()} helps with two types of preliminary tests to check unpaired two-sample t-test assumptions.    
+<font size="3">Besides visualizing the distribution of the data, we have to calculate the statistical results to prove if the data set is actually normally distributed. This \function{normalization()} helps with two types of preliminary tests to check the unpaired two-sample t-test assumptions.    
 <br />
 The first one is to use Shapiro-Wilk normality test to look at the normality. If the p-value is larger than 0.05, it means the distribution of the data are not significantly different from normal distribution. So we can assume the normality.    
 <br />
 The second one is to use F-test to test for homogeneity in variance by using var.test(). If the p-value is greater than 0.05, it means there's no significant difference between the variance of the two sets of data. So we can use the classic t-test for the analysis (This function requires dplyr package).        
 <br />
-Below is an example of the preliminary tests of the voltage threshold data in alcohol treated group. After providing the data name, dependent variable, and the treatment group in the function, we can quickly get the results of the two tests: (1) Shapiro-Wilk normality test p-value=0.1962, which is larger than 0.05. This means the alcohol group data has the normality. (2) F-test p-value=0.6951, which is also larger than 0.05. It indicates that alcohol group data has homogeneity in variance. We can move on to use the classic t-test for analysis.</font>  
+Below is an example of the preliminary tests of the voltage threshold data in alcohol treated group. After providing the data name, dependent variable, and the treatment group in the function, we can quickly get the results of the two tests: (1) Shapiro-Wilk normality test p-value=0.1962, which is larger than 0.05. (2) F-test p-value=0.6951, which is also larger than 0.05. These indicated that alcohol group data has the normality and the homogeneity in variance. We can move on to use the classic t-test for analysis.</font>  
 ```{r}
 normalization(ephys1, "Voltage.threshold.mV", "alcohol")
 ```
-
-<font size="5">Function 6: T-Test</font>    
+<br />
+<font size="5">Function 6: threshttest: Calculate T-Test p-value</font>    
 <font size="3">The final step is to perform a t-test to study if there is a significant difference between the two treatment groups. By simply typing in the dependent variable of interest and the file name, we can get the p value of the t-test and know the relationship between these two groups.    
 <br />
 The following are two examples of using this function. The results showed that the p-value for voltage threshold is 0.01275359, which is smaller than 0.05. This indicates that there is a significant difference of voltage threshold between alcohol and water groups. However, the p-value for current threshold is 1, which is larger than 0.05. It means there's no difference in current threshold between these two groups.</font>
@@ -104,6 +116,29 @@ The following are two examples of using this function. The results showed that t
 threshttest("Voltage.threshold.mV", ephys1)
 threshttest("Current.Threshold..pA.", ephys1)
 ```
-
-<font size="5">Conclusion</font>    
-<font size="3">Overall, this package helps make the data analysis of electrophysiology data in our lab a lot easier and faster. As long as we keep organizing our raw data in a similar pattern, by using the above six functions, we can quickly filter the data, draw beautiful graphs, and get statistical results.</font>
+<br />
+<font size="5">Function 7: Shinygraph: Drag and Select Data Points</font>    
+<font size="3">The last function in this package is to use the shiny gadget to drag and select data points. Sometimes when we have all the data points on a graph and want to see the detailed information of certain data points, we have to look back and forth between the graph and the raw data file. With this \function{Shinygraph()}, we can simply drag a box that include the data points we want to see and then click "done". The detailed information of the selected data will be shown.    
+The following is an example of selecting the water and alcohol treated voltage threshold data. By typing in the data file name, treatment, and the y-axis dependent variable, we can see a graph shown on the right side viewer. Let's say we want to see what are the two cells in alcohol group at the very bottom. We can drag a box around these two points, and then click "Done". The inforamtion is shown below. </font>
+```{r}
+shinygraph(ephys1, "Treatment", "Voltage.threshold.mV")
+```
+<br />
+<br />
+<br />
+<font size="6">Future Work and Plans</font>     
+<font size="3">In terms of future plans, there are several possibilities:    
+1. Our lab may gather electrophysiology data from different brain regions in the future, which may need similar analysis like graphing and t-test, but will have different criteria. We can still use the \func{ephysfilter()} to filter the data, but will need to change some of the default settings in the function. For example, now the y frac value is set to 0.4-0.6 because it is recording from layer five of the cortex. If we need to record from layer II or III, the y frac criteria might change to 0.3-0.4. We can type in y_max=0.4, y_min=0.3 to the function to change the default settings.    
+<br />
+2. We might gather some step current data in the future. This requires line graph for each current instead of violin plot. In order to do that, I need to:    
+(a) Select only the cell ID and step current columns and create a new data frame for one treatment group.    
+(b) Select the range for x and y axis. Sample coding would be like:    
+# xrange <- range(data$CurrentSteps)      
+# yrange <- range(data$DependentVar)        
+(c) Set up the plot. Sample coding would be like:         
+# plot(xrange, yrange, type="n", xlab="xlab", ylab="ylab")    
+(d) Add lines from different treatment groups together in one graph.    
+(e) Add title, subtitle, and a legend.    
+(f) Make it into a function and add this function into this package.    
+<br />
+Overall, this package helps make the data analysis of electrophysiology data in our lab a lot easier and faster. As long as we keep organizing our raw data in a similar pattern, by using the above seven functions, we can quickly filter the data, draw beautiful graphs, and get valuable statistical results. If our lab starts collecting new variables or doing new experiments, we can always modify the current functions by changing some default arguments, or write new but similar functions for new data analysis.</font>
